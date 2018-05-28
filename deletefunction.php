@@ -1,6 +1,6 @@
 <?php
 {
-    $pdo=new PDO('mysql:: host=mars.iuk.hdm-stuttgart.de;dbname=u-cg090', 'cg090', 'ahchi8Uyie',array('charset'=>'utf8'));
+    $pdo=new PDO
 
     $statement = $pdo->prepare("SELECT * FROM posts") ;
     if($statement->execute()) {
