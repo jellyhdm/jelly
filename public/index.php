@@ -1,75 +1,41 @@
 <?php
-session_start();
-include ('connect.php');
-if(isset($_GET['login'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+require_once('../private/initialize.php');
 
-    $statement = $db->prepare("SELECT * FROM testdb WHERE email = :email");
-    $result = $statement->execute(array('email' => $email));
-    $user = $statement->fetch();
+$errors = [];
+$username = '';
+$password = '';
 
-    //Überprüfung des Passworts
-    if ($user !== false && password_verify($password, $user['password'])) {
-        $_SESSION['userid'] = $user['id'];
-        die('Login erfolgreich. Weiter zu <a href="geheim.php">internen Bereich</a>');
-    } else {
-        $errorMessage = "E-Mail oder Passwort war ungültig<br>";
+if(is_post_request()) {
+
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    // Validations
+    if(is_blank($username)) {
+        $errors[] = "Der Username muss ausgefüllt werden.";
+    }
+    if(is_blank($password)) {
+        $errors[] = "Das Passwort muss ausgefüllt werden.";
+    }
+
+    // if there were no errors, try to login
+    if(empty($errors)) {
+        $user = User::find_by_username($username);
+        // test if user found and password is correct
+        if($user != false && $user->verify_password($password)) {
+            // Mark user as logged in
+            $session->login($user);
+            redirect_to(url_for('/index.php'));
+        } else {
+            // username not found or password does not match
+            $errors[] = "Der Login hat nicht funktioniert.";
+        }
+
     }
 
 }
 
-                $showFormular = true; //Variable ob das Registrierungsformular anezeigt werden soll
-
-                if(isset($_GET['register'])) {
-                    $error = false;
-                    $email = $_POST['email'];
-                    $password = $_POST['password'];
-                    $password2 = $_POST['password2'];
-
-                    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        echo 'Bitte eine gültige E-Mail-Adresse eingeben<br>';
-                        $error = true;
-                    }
-                    if(strlen($password) == 0) {
-                        echo 'Bitte ein Passwort angeben<br>';
-                        $error = true;
-                    }
-                    if($password != $password2) {
-                        echo 'Die Passwörter müssen übereinstimmen<br>';
-                        $error = true;
-                    }
-
-                    //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
-                    if(!$error) {
-                        $statement = $db->prepare("SELECT * FROM testdb WHERE email = :email");
-                        $result = $statement->execute(array('email' => $email));
-                        $user = $statement->fetch();
-
-                        if($user !== false) {
-                            echo 'Diese E-Mail-Adresse ist bereits vergeben<br>';
-                            $error = true;
-                        }
-                    }
-
-                    //Keine Fehler, wir können den Nutzer registrieren
-                    if(!$error) {
-                        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-                        $statement = $db->prepare("INSERT INTO testdb (email, password) VALUES (:email, :password)");
-                        $result = $statement->execute(array('email' => $email, 'password' => $password_hash));
-
-                        if($result) {
-                            echo 'Du wurdest erfolgreich registriert. <a href="login.php">Zum Login</a>';
-                            $showFormular = false;
-                        } else {
-                            echo 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
-                        }
-                    }
-                }
-
-                if($showFormular) {
-                    ?>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -151,13 +117,7 @@ if(isset($_GET['login'])) {
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <h2>Was ist jelly?</h2>
-                <p>Grayscale is a free Bootstrap theme created by Start Bootstrap. It can be yours right now, simply download the template on
-                    <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.</p>
-                <p>This theme features stock photos by
-                    <a href="http://gratisography.com/">Gratisography</a>
-                    along with a custom Google Maps skin courtesy of
-                    <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-                <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with SASS and LESS files for easy customization!</p>
+
             </div>
         </div>
     </div>
@@ -195,9 +155,7 @@ if(isset($_GET['login'])) {
                         <input type="submit" class="btn btn-default btn-lg" value="Jetzt loslegen!">
                     </form>
 </form>
-                    <?php
-                } //Ende von if($showFormular)
-                ?>
+
 
             </div>
         </div>
@@ -249,28 +207,30 @@ if(isset($_GET['login'])) {
                 }
                 ?>
 
-                <form action="?login=1" method="post">
+                <form action="?index=1" method="post">
                     E-Mail:<br>
-                    <input type="email" size="40" maxlength="250" name="email"><br><br>
+                    <input type="text" name="username" value="<?php echo h($username); ?>"><br><br>
 
                     Dein Passwort:<br>
-                    <input type="password" size="40"  maxlength="250" name="password"><br>
+                    <input type="password" name="password" value="" /><br>
+                    <input type="submit" name="submit" value="Einloggen" />
                 </form>
+                <div class="modal-footer">
+                     <?php echo display_errors($errors); ?>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Abbrechen</button>
-                <input type="submit" class="btn btn-default" value="Einloggen">
-            </div>
+
         </div>
     </div>
 </div>
 
 <!-- Bootstrap core JavaScript -->
-<script src="jquery/jquery.min.js"></script>
-<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="jquery/jquery.js"></script>
+<script src="bootstrap/js/bootstrap.bundle.js"></script>
 
 <!-- Plugin JavaScript -->
-<script src="jquery-easing/jquery.easing.min.js"></script>
+<script src="jquery-easing/jquery.easing.js"></script>
 
 
 
