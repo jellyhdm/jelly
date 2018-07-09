@@ -210,6 +210,23 @@ class UploadFile
         $success = move_uploaded_file($file['tmp_name'], $this->destination . $filename);
         if ($success) {
             $result = $file['name'] . ' was uploaded successfully';
+            try {
+                $stmt = $this->pdo->prepare('
+              INSERT INTO files
+                (file_id, owner_id, file_path, file_name)
+              VALUES
+                (:file_id, :owner_id , :file_path, :file_name)
+            ');
+                $stmt->bindParam(':file_id', $file->file_id);
+                $stmt->bindParam(':owner_id', $file->owner_id);
+                $stmt->bindParam(':file_path', $file->file_path);
+                $stmt->bindParam(':file_name', $file->file_name);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                echo $e->getMessage() . "<br>";
+            die();
+        }
+
             if (!is_null($this->newName)) {
                 $result .= ', and was renamed ' . $this->newName;
             }

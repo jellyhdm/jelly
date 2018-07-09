@@ -1,6 +1,5 @@
 <?php
 use foundationphp\UploadFile;
-session_start();
 require_once 'src/foundationphp/UploadFile.php';
 if (!isset($_SESSION['maxfiles'])) {
 	$_SESSION['maxfiles'] = ini_get('max_file_uploads');
