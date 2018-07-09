@@ -66,7 +66,7 @@ data-displaymax="<?php echo $_SESSION['displaymax'];?>">
 <input type="submit" name="upload" value="Upload File">
 </p>
 </form>
-x
+xoi
 <script src="js/checkmultiple.js"></script>
 </body>
 </html>
