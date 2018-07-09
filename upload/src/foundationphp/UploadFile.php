@@ -215,7 +215,7 @@ class UploadFile
               INSERT INTO files
                 (file_id, owner_id, file_path, file_name)
               VALUES
-                (:file_id, :owner_id , :file_path, :file_name)
+                (NULL , :owner_id , :file_path, :file_name)
             ');
                 $stmt->bindParam(':file_id', $file->file_id);
                 $stmt->bindParam(':owner_id', $file->owner_id);
