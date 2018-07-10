@@ -1,5 +1,6 @@
 <?php
 use foundationphp\UploadFile;
+include_once ('../private/includes/dbconfig.php');
 require_once 'src/foundationphp/UploadFile.php';
 if (!isset($_SESSION['maxfiles'])) {
 	$_SESSION['maxfiles'] = ini_get('max_file_uploads');
@@ -14,7 +15,7 @@ if (isset($_POST['upload'])) {
 	
 	$destination = __DIR__ . '/uploaded/';
     try {
-    	$upload = new UploadFile($destination);
+    	$upload = new UploadFile ($destination, $DB_con);
     	$upload->setMaxSize($max);
     	$upload->allowAllTypes();
     	$upload->upload();
@@ -44,7 +45,8 @@ if ($result) {
 	foreach ($result as $message) {
 	    echo "<li>$message</li>";
 	}
-}?>
+
+} ?>
 </ul>
 <?php } ?>
 <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
