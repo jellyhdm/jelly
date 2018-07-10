@@ -19,7 +19,7 @@ class UploadFile
 	protected $suffix = '.upload';
 	protected $renameDuplicates;
 
-	public function __construct($uploadFolder)
+	public function __construct($uploadFolder, $DB_con)
 	{
 		if (!is_dir($uploadFolder) || !is_writable($uploadFolder)) {
 			throw new \Exception("$uploadFolder must be a valid, writable folder.");
@@ -28,6 +28,7 @@ class UploadFile
 			$uploadFolder .= '/';
 		}
 		$this->destination = $uploadFolder;
+		$this->db = $DB_con;
 	}
 
 	public function setMaxSize($bytes)
@@ -206,14 +207,15 @@ class UploadFile
 
     protected function moveFile($file)
     {
+        //? : ist if, dann else - Abfrage, weil der newName nur benutzt wird, wenn der File renamed wird
         $filename = isset($this->newName) ? $this->newName : $file['name'];
-        $success = move_uploaded_file($file['tmp_name'], $this->destination . $filename);
+        $owner_id= $_SESSION["user_session"];
+        $success = move_uploaded_file($file['tmp_name'], $this->destination .$owner_id .'/'.$filename);
+        $file_path= $this->destination;
         if ($success) {
             $result = $file['name'] . ' was uploaded successfully';
             try {
-                $owner_id= $_SESSION["user_session"];
-                $file_path= $this->destination;
-                $stmt = $DB_con->prepare("INSERT INTO files (owner_id, file_path, file_name) VALUES (:owner_id, :file_path, :file) ");
+                $stmt = $this->db->prepare("INSERT INTO files (owner_id, file_path, file_name) VALUES (:owner_id, :file_path, :file) ");
                 $stmt->bindParam(':owner_id', $owner_id);
                 $stmt->bindParam(':file_path', $file_path);
                 $stmt->bindParam(':file', $filename);
