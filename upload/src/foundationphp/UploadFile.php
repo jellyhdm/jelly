@@ -210,6 +210,7 @@ class UploadFile
         //? : ist if, dann else - Abfrage, weil der newName nur benutzt wird, wenn der File renamed wird
         $filename = isset($this->newName) ? $this->newName : $file['name'];
         $owner_id= $_SESSION["user_session"];
+        mkdir($this->destination.'/'.$owner_id. '/');
         $success = move_uploaded_file($file['tmp_name'], $this->destination .$owner_id .'/'.$filename);
         $file_path= $this->destination;
         if ($success) {
