@@ -204,17 +204,19 @@ class UploadFile
 		}
 	}
 
-    protected function moveFile($file, $file_path, $file_name)
+    protected function moveFile($file)
     {
         $filename = isset($this->newName) ? $this->newName : $file['name'];
         $success = move_uploaded_file($file['tmp_name'], $this->destination . $filename);
         if ($success) {
             $result = $file['name'] . ' was uploaded successfully';
             try {
-                $stmt = $DB_con->prepare("INSERT INTO files (file_id, owner_id, file_path, file_name) VALUES (NULL, :file_id, :owner_id, :file_path, :file_name) ");
-                //$stmt->bindParam(':owner_id', $owner_id);
+                $owner_id= $_SESSION["user_session"];
+                $file_path= $this->destination;
+                $stmt = $DB_con->prepare("INSERT INTO files (owner_id, file_path, file_name) VALUES (:owner_id, :file_path, :file) ");
+                $stmt->bindParam(':owner_id', $owner_id);
                 $stmt->bindParam(':file_path', $file_path);
-                $stmt->bindParam(':file_name', $file_name);
+                $stmt->bindParam(':file', $filename);
                 $stmt->execute();
             } catch (PDOException $e) {
                 echo $e->getMessage() . "<br>";
