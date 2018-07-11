@@ -1,40 +1,65 @@
 <?php
-require_once('../private/initialize.php');
+include ('../private/includes/dbconfig.php');
 
-$errors = [];
-$username = '';
-$password = '';
-
-if(is_post_request()) {
-
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    // Validations
-    if(is_blank($username)) {
-        $errors[] = "Der Username muss ausgefüllt werden.";
-    }
-    if(is_blank($password)) {
-        $errors[] = "Das Passwort muss ausgefüllt werden.";
-    }
-
-    // if there were no errors, try to login
-    if(empty($errors)) {
-        $user = User::find_by_username($username);
-        // test if user found and password is correct
-        if($user != false && $user->verify_password($password)) {
-            // Mark user as logged in
-            $session->login($user);
-            redirect_to(url_for('/index.php'));
-        } else {
-            // username not found or password does not match
-            $errors[] = "Der Login hat nicht funktioniert.";
-        }
-
-    }
-
+if($user->is_loggedin()==false)
+{
+    $user->redirect('start.php');
 }
 
+if(isset($_POST['btn-register']))
+{
+    $email = trim($_POST['txt_email']);
+    $upass = trim($_POST['txt_upass']);
+
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error= 'Please enter a valid email address !';
+    }
+    else if($upass=="") {
+        $error = "provide password !";
+    }
+    else if(strlen($upass) < 8){
+        $error= "Password must be atleast 8 characters";
+    }
+    else
+    {
+        try
+        {
+            $stmt = $DB_con->prepare("SELECT email FROM users WHERE email=:email");
+            $stmt->execute(array(':email'=>$email));
+            $row=$stmt->fetch(PDO::FETCH_ASSOC);
+
+            if($row['email']==$email) {
+                $error = "sorry email id already taken !";
+            }
+            else
+            {
+                if($user->register($email,$upass))
+                {
+                    $user->redirect('index.php?joined');
+                }
+            }
+        }
+        catch(PDOException $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+}
+
+if(isset($_POST['btn-login']))
+{
+    $email = $_POST['txt_email'];
+    $upass = $_POST['txt_password'];
+
+    if($user->login($email,$upass))
+    {
+        $user->redirect('start.php');
+    }
+    else
+    {
+        $error = "Wrong Details !";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -117,7 +142,7 @@ if(is_post_request()) {
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <h2>Was ist jelly?</h2>
-
+               <!-- Text über was Jelly ist -->
             </div>
         </div>
     </div>
@@ -139,22 +164,45 @@ if(is_post_request()) {
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
+                <form action="index.php?btn-register" method="post">
                 <h2>Registriere dich jetzt!</h2>
+                <?php
+                if(isset($error))
+                {
+                    foreach($error as $errorelement)
+                    {
+                        ?>
+                        <div class="alert alert-danger">
+                            <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $errorelement; ?>
+                        </div>
+                        <?php
+                    }
+                }
+                else if(isset($_GET['joined']))
+                {
+                    ?>
+                    <div class="alert alert-info">
+                        <i class="glyphicon glyphicon-log-in"></i> &nbsp; Successfully registered <a href='index.php'>login</a> here
+                    </div>
+                    <?php
+                }
+                ?>
 
-<form>
-                    <form action="?register=1" method="post">
+
+                    <form >
                         E-Mail:<br>
-                        <input type="email" size="40" maxlength="250" name="email" placeholder="max.mustermann@jelly.de"><br><br>
+                        <input type="email" class="form-control" size="40" maxlength="250" name="txt_email" placeholder="max.mustermann@jelly.de" value="<?php if(isset($error)){echo $email;}?>"><br><br>
 
                         Dein Passwort:<br>
-                        <input type="password" size="40"  maxlength="250" name="password"><br>
+                        <input type="password" class="form-control" size="40"  maxlength="250" name="txt_upass" placeholder="Bitte gebe ein Password"><br>
 
-                        Passwort wiederholen:<br>
-                        <input type="password" size="40" maxlength="250" name="password2"><br><br>
+                       <br><br>
 
-                        <input type="submit" class="btn btn-default btn-lg" value="Jetzt loslegen!">
+                        <input type="submit" class="btn btn-default btn-lg" name="btn-register" value="Jetzt loslegen!">
                     </form>
-</form>
+                    <label>I have an account ! <a href="index.php">Sign In</a></label>
+                </form>
+
 
 
             </div>
@@ -201,22 +249,37 @@ if(is_post_request()) {
                 </button>
             </div>
             <div class="modal-body">
-                <?php
-                if(isset($errorMessage)) {
-                    echo $errorMessage;
-                }
-                ?>
 
-                <form action="?index=1" method="post">
-                    E-Mail:<br>
-                    <input type="text" name="username" value="<?php echo h($username); ?>"><br><br>
-
-                    Dein Passwort:<br>
-                    <input type="password" name="password" value="" /><br>
-                    <input type="submit" name="submit" value="Einloggen" />
+                <form method="post">
+                    <h2>Sign in.</h2><hr />
+                    <?php
+                    if(isset($error))
+                    {
+                        ?>
+                        <div class="alert alert-danger">
+                            <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $error; ?> !
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="txt_email" placeholder="E-Mail" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="txt_password" placeholder="Your Password" required />
+                    </div>
+                    <div class="clearfix"></div><hr />
+                    <div class="form-group">
+                        <button type="submit" name="btn-login" class="btn btn-block btn-primary">
+                            <i class="glyphicon glyphicon-log-in"></i>&nbsp;SIGN IN
+                        </button>
+                    </div>
+                    <br />
+                    <label>Don't have account yet ! <a href="register.php">Sign Up</a></label>
                 </form>
+
+
                 <div class="modal-footer">
-                     <?php echo display_errors($errors); ?>
                 </div>
 
             </div>
@@ -226,11 +289,11 @@ if(is_post_request()) {
 </div>
 
 <!-- Bootstrap core JavaScript -->
-<script src="jquery/jquery.js"></script>
-<script src="bootstrap/js/bootstrap.bundle.js"></script>
+<script src="jquery/jquery.min.js"></script>
+<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Plugin JavaScript -->
-<script src="jquery-easing/jquery.easing.js"></script>
+<script src="jquery-easing/jquery.easing.min.js"></script>
 
 
 
@@ -240,4 +303,4 @@ if(is_post_request()) {
 </body>
 
 </html>
->>>>>>> Stashed changes
+
