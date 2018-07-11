@@ -100,6 +100,7 @@ $userRow=$stmt->fetch(PDO::FETCH_ASSOC);
 <div class="content-wrapper">
     <div class="container-fluid">
         <!-- Breadcrumbs-->
+        <!-- Breadcrumbs-->
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <a href="#">Übersicht</a>
@@ -110,11 +111,11 @@ $userRow=$stmt->fetch(PDO::FETCH_ASSOC);
         <hr>
         <p>Hallo <?php echo $_SESSION['user_session'] ?><br>Dies ist die Übersichtsseite, mit der der Nutzer starten wird. </p>
         <!-- Leeres DIV um der Seite größe zu geben-->
-        <div class="row">
-            <div class="col-md-3">x</div>
-            <div class="col-md-3" style="height: 100px; width: 100px;"><i class="fas fa-folder" style="font-size: 70pt; color: lightcoral;"></i></div>
-            <div class="col-md-3">x</div>
-            <div class="col-md-3">x</div>
+        <div class="row" style="margin: 5px; align-content: center;">
+            <div class="col-md-3" style="height: 100px; width: 100px; "><i class="fas fa-folder" style="font-size: 70pt; color: #ffbdce;"></i></div>
+            <div class="col-md-3" style="height: 100px; width: 100px; "><i class="fas fa-folder" style="font-size: 70pt; color: #ffbdce;"></i></div>
+            <div class="col-md-3" style="height: 100px; width: 100px; "><i class="fas fa-folder" style="font-size: 70pt; color: #ffbdce;"></i></div>
+            <div class="col-md-3" style="height: 100px; width: 100px; "><i class="fas fa-folder" style="font-size: 70pt; color: #ffbdce;"></i></div>
         </div>
         <div class="row">
             <div class="col-md-3">x</div>
@@ -162,7 +163,6 @@ $userRow=$stmt->fetch(PDO::FETCH_ASSOC);
     <!-- Custom scripts for all pages-->
     <script src="js/jelly2.js"></script>
     <!-- Custom scripts for this page-->
-
 
 
 </div>
