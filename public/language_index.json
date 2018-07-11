@@ -1,5 +1,9 @@
-var arrLang = {
-        "de": {
+{
+  "config": {
+    "default": "de"
+  },
+  "language": {
+            "de": {
             "#nav-jelly":"Jelly",
             "#nav-about":"Über Jelly",
             "#nav-features":"Features",
