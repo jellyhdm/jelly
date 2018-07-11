@@ -20,6 +20,8 @@
             "#regi-mail": "Deine E-Mail",
             "#regi-password": "Dein Passwort",
             "#regi-password2": "Passwort"
+            "#ml-defaultLangCode": "// choose language by localStorage or default in json config",
+            "#ml-enLangCode": "// change language immdiately",
             ".ml-classA": "Class #A"
         } ,
 
@@ -40,6 +42,8 @@
             "#regi-mail": "Your e-Mail",
             "#regi-password": "Your Password",
             "#regi-password2": "Password"
+            "#ml-defaultLangCode": "// choose language by localStorage or default in json config",
+            "#ml-enLangCode": "// change language immdiately",
             ".ml-classA": "Class #A"
         }
 }
