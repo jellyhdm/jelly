@@ -20,6 +20,7 @@
             "#regi-mail": "Deine E-Mail",
             "#regi-password": "Dein Passwort",
             "#regi-password2": "Passwort"
+            ".ml-classA": "Class #A"
         } ,
 
         "en": {
@@ -39,7 +40,7 @@
             "#regi-mail": "Your e-Mail",
             "#regi-password": "Your Password",
             "#regi-password2": "Password"
-
+            ".ml-classA": "Class #A"
         }
 }
 
