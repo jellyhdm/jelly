@@ -3,8 +3,11 @@ namespace foundationphp;
 
 class UploadFile
 {
+    //Klasseneigenschaften wurden auf protected gesetzt, damit der Zugang auf Elternklassen und abgeleitete Klassen
+    //beschränkt wird; private würde es zu sehr einschränken, während public wiederum nicht sicher wäre
 	protected $destination;
 	protected $messages = array();
+	//2MB ist die maximale Größe, die eine Datei haben darf, um hochgeladen zu werden
 	protected $maxSize = 2000000;
 	protected $permittedTypes = array(
 			'image/jpeg',
@@ -15,22 +18,28 @@ class UploadFile
 	);
 	protected $newName;
 	protected $typeCheckingOn = true;
-	protected $notTrusted = array('bin', 'cgi', 'exe', 'js', 'pl', 'php', 'py', 'sh');
+	protected $notTrusted = array('bin', 'cgi', 'exe', 'js', 'pl', 'php5','php', 'py', 'sh');
 	protected $suffix = '.upload';
 	protected $renameDuplicates;
-
+//KOnstruktor wird bei jedem new UploadFile aufgerufen; die verpflichtenden Parameter sind $uploadFolder und $DB_con
 	public function __construct($uploadFolder, $DB_con)
 	{
+	    //er fragt ab, ob der Ordner auf dem Server existiert und
+        //ob er writable ist -> wenn nicht, kommt eine Fehlermeldung
 		if (!is_dir($uploadFolder) || !is_writable($uploadFolder)) {
 			throw new \Exception("$uploadFolder must be a valid, writable folder.");
 		}
+		//diese Schleife checkt, ob das letzte Zeichen des Strings von $uploadFolder ein Backslash ist;
+        //wenn nicht, wird dort einer angefügt, damit man später nur noch beoispielseise die User-ID anfügen muss,
+        //um neue Ordner erstellen zu können
 		if ($uploadFolder[strlen($uploadFolder)-1] != '/') {
 			$uploadFolder .= '/';
 		}
+		//hier erfolgt der Methodenaufruf für jede neue UploadFile
 		$this->destination = $uploadFolder;
 		$this->db = $DB_con;
 	}
-
+//checken, ob die hochzuladende Datei die festgelegte Größe im Server überschreitet
 	public function setMaxSize($bytes)
 	{
 		$serverMax = self::convertToBytes(ini_get('upload_max_filesize'));
@@ -42,7 +51,8 @@ class UploadFile
 			$this->maxSize = $bytes;
 		}
 	}
-
+//kontrolliert den letzten Buchstaben der Datei und leitet dann einen fallthrough switch case (also eines ohne breaks) ein;
+//ist der letzte Buchstabe ein k, sprich Kilobyte, wird der Wert einmal mit 1024 multipliziert, um ihn in Bytes umwandeln zu können usw.
 	public static function convertToBytes($val)
 	{
 		$val = trim($val);
@@ -72,18 +82,18 @@ class UploadFile
 		}
 	}
 
-	public function allowAllTypes($suffix = null)
-	{
-	 $this->typeCheckingOn = false;
-		if (!is_null($suffix)) {
-		if (strpos($suffix, '.') === 0 || $suffix == '') {
-				$this->suffix = $suffix;
-			} else {
-				$this->suffix = ".$suffix";
+    public function allowAllTypes($suffix = null)
+    {
+    $this->typeCheckingOn = false;
+	if (!is_null($suffix)) {
+	if (strpos($suffix, '.') === 0 || $suffix == '') {
+			$this->suffix = $suffix;
+		} else {
+			$this->suffix = ".$suffix";
 			}
 		}
 	}
-
+//$uploaded ist das letzte in dem Array initialisierte Element und soll nun ausgewählt und kontrolliert werden
 	public function upload($renameDuplicates = true)
 	{
 		$this->renameDuplicates = $renameDuplicates;
@@ -148,7 +158,7 @@ class UploadFile
 				break;
 		}
 	}
-
+//hier werden verschiedene Szenarien bezüglich der Dateigröße kontrolliert und die passende Meldung angezeigt
 	protected function checkSize($file)
 	{
 		if ($file['size'] == 0) {
@@ -172,7 +182,7 @@ class UploadFile
 			return false;
 		}
 	}
-
+//checked den Namen der Datei und ersetzt die Leerzeichen durch Unterstriche
 	protected function checkName($file)
 	{
 		$this->newName = null;
@@ -181,12 +191,16 @@ class UploadFile
 			$this->newName = $nospaces;
 		}
 		$nameparts = pathinfo($nospaces);
+		//die Endung wird geprüft: Falls die Endung einer unerlaubten entspricht oder keine Endung vorhanden ist, wird
+        //der Datei sie Endung .upload hinzugefügt
 		$extension = isset($nameparts['extension']) ? $nameparts['extension'] : '';
 		if (!$this->typeCheckingOn && !empty($this->suffix)) {
 			if (in_array($extension, $this->notTrusted) || empty($extension)) {
 				$this->newName = $nospaces . $this->suffix;
 			}
 		}
+		//wenn der Name der Datei feststeht, wird der Ordner auf alle Dateien geprüft;  existiert bereits eine Datei mit demselben
+        //Namen wird der Datei ein Unterstrich und die nächthöhere Zahl angefügt;
 		if ($this->renameDuplicates) {
 			$name = isset($this->newName) ? $this->newName : $file['name'];
 			$existing = scandir($this->destination);
