@@ -1,3 +1,14 @@
+<?php
+include_once '../private/includes/dbconfig.php';
+if(!$user->is_loggedin())
+{
+    $user->redirect('index.php');
+}
+$id = $_SESSION['user_session'];
+$stmt = $DB_con->prepare("SELECT * FROM users WHERE id=:id");
+$stmt->execute(array(":id"=>$id));
+$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,14 +17,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="jelly, maria barbulovic, steffi dinies, carina gierth">
     <title>jelly</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <!-- Bootstrap core CSS-->
+    <!-- BootstrapCSS-->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-    <!-- Custom fonts-->
+    <!-- FontAwesome-->
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
-    <!-- Custom styles-->
+    <!-- Stylesheet für jelly-->
     <link href="css/style2.css" rel="stylesheet">
 </head>
 
@@ -34,9 +45,9 @@
                 </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Upload">
-                <a class="nav-link" href="upload.html">
+                <a class="nav-link" href="files.html">
                     <i class="fas fa-upload"></i>
-                    <span class="nav-link-text">Upload</span>
+                    <span class="nav-link-text">Files</span>
                 </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Download">
@@ -67,7 +78,7 @@
                         Profil bearbeiten
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item small" data-toggle="modal" data-target="#exampleModal">
+                    <a href="logout.php" class="dropdown-item small" data-toggle="modal" data-target="#exampleModal">
                         <i class="fa fa-fw fa-sign-out"></i>Logout</a>
                 </div>
             </li>
@@ -97,9 +108,20 @@
         </ol>
         <h1>Übersicht</h1>
         <hr>
-        <p>Dies ist die Übersichtsseite, mit der der Nutzer starten wird. </p>
+        <p>Hallo <?php echo $_SESSION['user_session'] ?><br>Dies ist die Übersichtsseite, mit der der Nutzer starten wird. </p>
         <!-- Leeres DIV um der Seite größe zu geben-->
-        <div style="height: 1000px;"></div>
+        <div class="row">
+            <div class="col-md-3">x</div>
+            <div class="col-md-3" style="height: 100px; width: 100px;"><i class="fas fa-folder" style="font-size: 70pt; color: lightcoral;"></i></div>
+            <div class="col-md-3">x</div>
+            <div class="col-md-3">x</div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">x</div>
+            <div class="col-md-3">x</div>
+            <div class="col-md-3">x</div>
+            <div class="col-md-3">x</div>
+        </div>
     </div>
     <!-- /.container-fluid-->
     <!-- /.content-wrapper-->
@@ -127,7 +149,7 @@
                 <div class="modal-body">Möchtest du dich wirklich ausloggen? Dann klicke auf Logout.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Abbrechen</button>
-                    <a class="btn btn-primary" href="index.php">Logout</a>
+                    <a class="btn btn-primary" href="logout.php">Logout</a>
                 </div>
             </div>
         </div>
