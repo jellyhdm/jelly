@@ -1,16 +1,7 @@
 <?php
 //Datenbankaufbau & Abfrage ob User eingeloggt ist
 include_once '../../private/includes/dbconfig.php';
-if(!$user->is_loggedin())
-{
-    $user->redirect('index.php');
-}
-$id = $_SESSION['user_session'];
-$stmt = $DB_con->prepare("SELECT * FROM users WHERE id=:id");
-$stmt->execute(array(":id"=>$id));
-$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
-//Übergabe der user_session an $owner_id
-$owner_id = $_SESSION['user_session'];
+include_once '../../private/includes/session.php';
 
 
 function get_folder_size($folder_name)
