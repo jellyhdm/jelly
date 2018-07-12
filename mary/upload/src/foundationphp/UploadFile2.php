@@ -1,7 +1,7 @@
 <?php
 namespace foundationphp;
 
-class UploadFile
+class UploadFile2
 {
     //Klasseneigenschaften wurden auf protected gesetzt, damit der Zugang auf Elternklassen und abgeleitete Klassen
     //beschränkt wird; private würde es zu sehr einschränken, während public wiederum nicht sicher wäre
