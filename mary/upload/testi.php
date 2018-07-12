@@ -1,2 +1,4 @@
 <?php ?>
-<form action="share.php" method="post" ><input type="submit" name="file_id=3" value="test"> </form>
+<form action="share.php" method="post" >
+    <input type="text" name="file_id" value="3">
+    <input type="submit" value="test"> </form>
