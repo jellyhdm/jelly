@@ -227,16 +227,19 @@ class UploadFile
     protected function moveFile($file)
     {
         //? : ist if, dann else - Abfrage, weil der newName nur benutzt wird, wenn der File renamed wird
-        $filename = isset($this->newName) ? $this->newName : $file['name'];
         $owner_id = $_SESSION["user_session"];
-        if (!is_dir($this->destination. $owner_id)) {
-            mkdir($this->destination. $owner_id, 0777);
+        $filename = isset($this->newName) ? $this->newName : $file['name'];
+        $file_path = $this->destination. $owner_id;
+
+        if (!is_dir($file_path)) {
+            mkdir($file_path, 0777);
         }
-        if (!is_dir($this->destination .'/up')) {
-            mkdir($this->destination . '/up', 0777);
-        }
-        $success = move_uploaded_file($file['tmp_name'], $this->destination . $owner_id . '/up' . $filename);
-        $file_path = $this->destination;
+
+        $file_path = $file_path.'/up';
+       if (!is_dir($file_path .'/up')) {
+           mkdir($file_path . '/up', 0777);
+       }
+        $success = move_uploaded_file($file['tmp_name'], $file_path.'/'. $filename);
         if ($success) {
             $result = $file['name'] . ' was uploaded successfully';
             try {
