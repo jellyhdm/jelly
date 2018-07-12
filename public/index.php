@@ -1,65 +1,31 @@
 <?php
 include ('../private/includes/dbconfig.php');
 
-if($user->is_loggedin()==false)
+if(!$user->is_loggedin()==false)
 {
     $user->redirect('start.php');
 }
+$id = $_SESSION['user_session'];
+$stmt = $DB_con->prepare("SELECT * FROM users WHERE id=:id");
+$stmt->execute(array(":id"=>$id));
+$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
 
-if(isset($_POST['btn-register']))
-{
-    $email = trim($_POST['txt_email']);
-    $upass = trim($_POST['txt_upass']);
-
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error= 'Please enter a valid email address !';
-    }
-    else if($upass=="") {
-        $error = "provide password !";
-    }
-    else if(strlen($upass) < 8){
-        $error= "Password must be atleast 8 characters";
-    }
-    else
-    {
-        try
-        {
-            $stmt = $DB_con->prepare("SELECT email FROM users WHERE email=:email");
-            $stmt->execute(array(':email'=>$email));
-            $row=$stmt->fetch(PDO::FETCH_ASSOC);
-
-            if($row['email']==$email) {
-                $error = "sorry email id already taken !";
-            }
-            else
-            {
-                if($user->register($email,$upass))
+                if(isset($_POST['btn-login']))
                 {
-                    $user->redirect('index.php?joined');
+                    $email = $_POST['txt_email'];
+                    $upass = $_POST['txt_password'];
+
+                    if($user->login($email,$upass))
+                    {
+                        $user->redirect('start.php');
+                    }
+                    else
+                    {
+                        $error = "Wrong Details !";
+                    }
                 }
-            }
-        }
-        catch(PDOException $e)
-        {
-            echo $e->getMessage();
-        }
-    }
-}
 
-if(isset($_POST['btn-login']))
-{
-    $email = $_POST['txt_email'];
-    $upass = $_POST['txt_password'];
 
-    if($user->login($email,$upass))
-    {
-        $user->redirect('start.php');
-    }
-    else
-    {
-        $error = "Wrong Details !";
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -160,6 +126,50 @@ if(isset($_POST['btn-login']))
 </section>
 
 <!-- Registrieren Section -->
+<?php
+
+if(isset($_POST['btn-register']))
+{
+    $email = trim($_POST['txt_email']);
+    $upass = trim($_POST['txt_upass']);
+
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error= 'Please enter a valid email address !';
+    }
+    else if($upass=="") {
+        $error = "provide password !";
+    }
+    else if(strlen($upass) < 8){
+        $error= "Password must be atleast 8 characters";
+    }
+    else
+    {
+        try
+        {
+            $stmt = $DB_con->prepare("SELECT email FROM users WHERE email=:email");
+            $stmt->execute(array(':email'=>$email));
+            $row=$stmt->fetch(PDO::FETCH_ASSOC);
+
+            if($row['email']==$email) {
+                $error = "sorry email id already taken !";
+            }
+            else
+            {
+                if($user->register($email,$upass))
+                {
+                    $user->redirect('index.php?joined');
+                }
+            }
+        }
+        catch(PDOException $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+}
+?>
+
+
 <section id="register" class="content-section text-center">
     <div class="container">
         <div class="row">
@@ -200,7 +210,7 @@ if(isset($_POST['btn-login']))
 
                         <input type="submit" class="btn btn-default btn-lg" name="btn-register" value="Jetzt loslegen!">
                     </form>
-                    <label>I have an account ! <a href="index.php">Sign In</a></label>
+                    <label>Ich habe einen Account <a href="index.php">Einloggen</a></label>
                 </form>
 
 
@@ -209,7 +219,7 @@ if(isset($_POST['btn-login']))
         </div>
     </div>
 </section>
-
+<!--Ende Registrieren -->
 
 <!-- Footer mit Social Media -->
 <footer>
@@ -237,8 +247,11 @@ if(isset($_POST['btn-login']))
         <p>Copyright &copy; jelly 2018</p>
     </div>
 </footer>
+<!-- Ende Footer -->
 
-<!-- Logout Modal-->
+<!-- Login Modal - Öffnet sich im Fenster-->
+
+
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -251,7 +264,6 @@ if(isset($_POST['btn-login']))
             <div class="modal-body">
 
                 <form method="post">
-                    <h2>Sign in.</h2><hr />
                     <?php
                     if(isset($error))
                     {
@@ -275,7 +287,7 @@ if(isset($_POST['btn-login']))
                         </button>
                     </div>
                     <br />
-                    <label>Don't have account yet ! <a href="register.php">Sign Up</a></label>
+                    <label>Ich bin noch nicht registriert <a href="#register">Registrieren</a></label>
                 </form>
 
 
@@ -287,7 +299,7 @@ if(isset($_POST['btn-login']))
         </div>
     </div>
 </div>
-
+<!-- Modal Ende - Ende von Login -->
 <!-- Bootstrap core JavaScript -->
 <script src="jquery/jquery.min.js"></script>
 <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
