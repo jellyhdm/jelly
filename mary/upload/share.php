@@ -28,9 +28,9 @@ $stmt3 = $DB_con->prepare ("INSERT INTO `share`(`share_id`, `file_id`, `public`,
 VALUES ($share,$file_id, TRUE, $owner_id,TRUE)");
 $stmt3->bindParam(':share_id', $share);
 $stmt3->bindParam(':file_id', $file_id);
-$stmt3->bindParam (':public', TRUE);
+$stmt3->bindParam (':public', TRUE or FALSE);
 $stmt3->bindParam (':rep_id', $owner_id);
-$stmt3->bindParam (':active', TRUE);
+$stmt3->bindParam (':active', TRUE or FALSE);
 $userRow=$stmt2->fetch(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
