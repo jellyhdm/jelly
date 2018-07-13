@@ -1,0 +1,34 @@
+{
+  "index": {
+    "en": "english",
+
+    "aboutjelly": "About Jelly",
+    "registernav": "Register",
+
+    "jelly": "The different file sharing for your files.",
+
+    "isjelly1": "What is Jelly?",
+    "isjelly": "Jelly is a free file hosting system for your files. You can use Jelly anytime and anywhere, no matter what device you have. Use Jelly to upload your files quickly and easily. Simply register with your email address at Jelly and you are ready to save your files conveniently. The operation of Jelly is very easy so register quickly.",
+    "canjelly1": "What can Jelly do?",
+    "canjelly": "You can easily upload your files and save them online. Create different folders and easily move your files in your own system. You can share the files with other users or even non-users. And best of all, you can access your files anytime and from any device.",
+
+    "mailregister": "Your e-Mail",
+    "pswdregister": "Your password",
+    "pswd2register": "repeat password wiederholen",
+    "account": "I already have an account",
+    "login": "Log In",
+
+    "Close": "Schließen",
+    "Enable": "Aktivieren",
+    "Disable": "Deaktiveren",
+    "Yes": "Ja",
+    "No": "Nein"
+  },
+
+  "start": {
+    "en": "English",
+    "xyz": "Belly",
+    "About": "Über",
+    "Contact": "Kontakt"
+  }
+}
