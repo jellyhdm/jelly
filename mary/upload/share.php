@@ -12,6 +12,7 @@ $owner_id= $_SESSION['user_session'];
 $file_id = $_POST["file_id"];
 $user_to_share_id = $_POST["user_share_id"];
 $is_public_share = $_POST["public_share"];
+
 $email=$_POST["email"];
 
 try {
