@@ -84,7 +84,9 @@ if(isset($_POST["action"]))
 
             if (count($file1) > 0) {
                 foreach ($file1 as $name1) {
-                    $stmt= $DB_con->prepare(SELECT `file_id` FROM `files` WHERE `file_name`
+                    $stmt= $DB_con->prepare("SELECT `file_id` FROM `files` WHERE $name1=:filename");
+                    $stmt->execute(array(":file_id"=>$userRow["file_id"]));
+                    $userRowFile=$stmt->fetch(PDO::FETCH_ASSOC);
                     $output .= '
      <tr>
   
