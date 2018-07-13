@@ -1,0 +1,37 @@
+{
+  "index": {
+    "de": "deutsch",
+
+    "aboutjelly": "Über Jelly",
+    "registernav": "Registrieren",
+
+    "jelly": "Das etwas andere File-Sharing für deine Dateien.",
+
+    "isjelly1": "Was ist Jelly?",
+    "isjelly": "Jelly ist ein kostenloses Filehosting-System für deine Dateien. Du kannst Jelly immer und überall nutzen, egal von welchem Gerät. Nutze Jelly um deine Dateien schnell und einfach hochzuladen. Registiere dich einfach mit deiner E-Mailadresse bei Jelly und schon kann du loslegen und deine Dateien bequem speichern. Die Bedienung von Jelly ist ganz einfach also registriere dich schnell.",
+    "canjelly1": "Was kann Jelly?",
+    "canjelly": "Du kannst deine Dateien ganz einfach hochladen und online speichern. Lege dir verschiedene Ordner an und verschiebe deine Dateien leicht in deinem eigenen System. Du kannst die Dateien mit anderen Nutzern oder auch Nicht-Nutzern teilen und das Beste ist, du kannst auf deine Dateien jederzeit und von allen Geräten zugreifen.",
+
+    "jellyregister": "Registriere dich jetzt und nutze Jelly kostenlos!",
+
+    "mailregister": "Deine E-Mail",
+    "pswdregister": "Dein Passwort",
+    "pswd2register": "Passwort wiederholen",
+    "account": "Ich habe schon einen Account",
+    "login": "Einlogen",
+
+    "Close": "Schließen",
+    "Enable": "Aktivieren",
+    "Disable": "Deaktiveren",
+    "Yes": "Ja",
+    "No": "Nein"
+  },
+
+  "start": {
+    "en": "English",
+    "xyz": "Belly",
+    "About": "Über",
+    "Contact": "Kontakt"
+  }
+
+}
