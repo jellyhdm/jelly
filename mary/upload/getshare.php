@@ -32,16 +32,17 @@ try {
         $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
         // file_get_contents reads the file content and returns it
         $down=file_get_contents('uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
+        $down_file='uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"];
 
-    if (file_exists($down)) {
+    if (file_exists($down_file)) {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.basename($down).'"');
+        header('Content-Disposition: attachment; filename="'.basename($down_file).'"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
-        header('Content-Length: ' . filesize($down));
-        readfile($down);
+        header('Content-Length: ' . filesize($down_file));
+        readfile($down_file);
         exit;
     }}
     // No public file => check access
@@ -60,15 +61,15 @@ try {
             $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
             $down=file_get_contents('uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
 
-        if (file_exists($down)) {
+        if (file_exists($down_file)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.basename($down).'"');
+            header('Content-Disposition: attachment; filename="'.basename($down_file).'"');
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($down));
-            readfile($down);
+            header('Content-Length: ' . filesize($down_file));
+            readfile($down_file);
             exit;
         }}
 
