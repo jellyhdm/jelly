@@ -42,7 +42,7 @@ if(isset($_POST["action"]))
         {
             foreach($folder as $name)
             {
-                if (is_dir($name1)) {
+                if (is_dir($name)) {
                     $output .= '   
                 
                     
