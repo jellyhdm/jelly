@@ -84,9 +84,16 @@ if(isset($_POST["action"]))
 
             if (count($file1) > 0) {
                 foreach ($file1 as $name1) {
-                    $stmt= $DB_con->prepare("SELECT `file_id` FROM `files` WHERE $name1=:filename");
-                    $stmt->execute(array(":file_id"=>$userRow["file_id"]));
-                    $userRowFile=$stmt->fetch(PDO::FETCH_ASSOC);
+                    try{
+                    $stmt= $DB_con->prepare("SELECT `file_id` FROM `files` WHERE file_name=:file_name");
+                    $stmt->bindParam(':file_name', $name1);
+                    $stmt->execute();
+                    $file_id=$stmt->fetch(PDO::FETCH_ASSOC);
+                    } catch (PDOException $e) {
+                        echo("Fehler! Bitten wenden Sie sich an den Administrator...<br>" . $e->getMessage() . "<br>");
+                        die();
+                    }
+
                     $output .= '
      <tr>
   
