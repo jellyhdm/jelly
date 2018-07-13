@@ -48,12 +48,11 @@ include_once 'nav.php'?>
         <p>Hallo <?php echo $_SESSION['user_session'] ?><br>Dies ist die Übersichtsseite, mit der der Nutzer starten wird. </p>
         <!-- Leeres DIV um der Seite größe zu geben-->
         <div align="right">
-            <button type="button" name="create_folder" id="create_folder" class="btn btn-success">Ordner erstellen</button>
-
+            <button type="button" name="upload" id="upload_file" data-name="<?php $name ?>" class="upload btn btn-success">Datei hochladen</button>
         </div>
 <!-- Aufruf bzw Einbindung der Aktionen-->
 
-        <div class="table-responsive table-scrollable" id="folder_table" >
+        <div class="table-responsive" id="file_table">
 
 
         </div>
