@@ -81,13 +81,15 @@ if(isset($_POST["action"]))
     <th>Löschen</th>
    </tr>
    ';
+
             if (count($file1) > 0) {
                 foreach ($file1 as $name1) {
+                    $stmt= $DB_con->prepare(SELECT `file_id` FROM `files` WHERE `file_name`
                     $output .= '
      <tr>
- 
+  
       <td>'.$name1.'</td>
-      <td><button type="button" name="rename" data-name="' . $name1 . '" class="rename btn btn-info btn-xs">Verschieben</button></td>
+      <td><button type="button" name="change_file_name" data-name="' . $name1 . '" class="rename btn btn-info btn-xs">Verschieben</button></td>
       <td><button type="button" name="share" data-name="' . $name1 . '" class="share btn btn-default btn-xs">Teilen</button></td>
       <td><button type="button" name="remove_file" data-name="' . $name1 . '" class="remove_file btn btn-danger btn-xs" id="'.$path.'">Löschen</button></td>
      </tr>';
@@ -201,7 +203,18 @@ if(isset($_POST["action"]))
     }
 
 
-
+    if($_POST["action"] == "change_file_name")
+    {
+        if(!file_exists($_POST["folder_name"]))
+        {
+            rename($_POST["old_name"], $_POST["folder_name"]);
+            echo 'Folder Name Change';
+        }
+        else
+        {
+            echo 'Folder Already Created';
+        }
+    }
 
     if($_POST["action"] == "change_file_name")
     {
