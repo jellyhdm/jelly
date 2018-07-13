@@ -1,5 +1,4 @@
 <?php
-//Datenbankaufbau & Abfrage ob User eingeloggt ist
 include_once '../../private/includes/dbconfig.php';
 include_once '../../private/includes/session.php';
 
@@ -16,7 +15,6 @@ function get_folder_size($folder_name)
         }
         else
         {
-
             $path = $folder_name . '/' . $file;
             $total_size = $total_size + filesize($path);
         }
@@ -28,16 +26,15 @@ if(isset($_POST["action"]))
 {
     if($_POST["action"] == "fetch")
     {
-        $folder = array_filter(glob($owner_id.'/'.('*')), 'is_dir');
+        $folder = (glob($owner_id.'/*'));
 
         $output = '
   <table class="table table-bordered table-striped">
    <tr>
-    <th>Folder Name</th>
-    <th>Update</th>
-    <th>Delete</th>
-    <th>Upload File</th>
-    <th>View Uploaded File</th>
+    <th>Ordner</th>
+    <th>Umbenennen</th>
+    <th>Ordner löschen</th>
+    <th>Dateien anschauen</th>
    </tr>
    ';
         if(count($folder) > 0)
@@ -47,10 +44,9 @@ if(isset($_POST["action"]))
                 $output .= '
      <tr>
       <td>'.$name.'</td>
-      <td><button type="button" name="update" data-name="'.$name.'" class="update btn btn-warning btn-xs">Update</button></td>
-      <td><button type="button" name="delete" data-name="'.$name.'" class="delete btn btn-danger btn-xs">Delete</button></td>
-      <td><button type="button" name="upload" data-name="'.$name.'" class="upload btn btn-info btn-xs">Upload File</button></td>
-      <td><button type="button" name="view_files" data-name="'.$name.'" class="view_files btn btn-default btn-xs">View Files</button></td>
+      <td><button type="button" name="update" data-name="'.$name.'" class="update btn btn-warning btn-xs">Umbenennen</button></td>
+      <td><button type="button" name="delete" data-name="'.$name.'" class="delete btn btn-danger btn-xs">Löschen</button></td>
+      <td><button type="button" name="view_files" data-name="'.$name.'" class="view_files btn btn-default btn-xs">Dateien anschauen</button></td>
      </tr>';
             }
         }
@@ -65,6 +61,45 @@ if(isset($_POST["action"]))
         $output .= '</table>';
         echo $output;
     }
+
+
+
+    if(isset($_POST["action"])) {
+        if ($_POST["action"] == "fetch_files1") {
+            $file1 = array_slice((scandir($owner_id.'/')),2);
+
+            $output = '
+  <table class="table table-bordered table-striped">
+   <tr>
+    <th>Dateien</th>
+    <th>In Ordner verschieben</th>
+    <th>Teilen</th>
+    <th>Löschen</th>
+   </tr>
+   ';
+            if (count($file1) > 0) {
+                foreach ($file1 as $name1) {
+                    $output .= '
+     <tr>
+ 
+      <td contenteditable="true" data-folder_name="'.$_POST["folder_name"].'" data-file_name ="'.$file.'" class="change_file_name">'.$file.'</button></td>
+      <td><button type="button" name="rename" data-name="' . $name1 . '" class="rename btn btn-info btn-xs">Verschieben</button></td>
+      <td><button type="button" name="share" data-name="' . $name1 . '" class="share btn btn-default btn-xs">Teilen</button></td>
+      <td><button type="button" name="remove_file" data-name="' . $name1 . '" class="remove_file btn btn-danger btn-xs" id="'.$path.'">Löschen</button></td>
+     </tr>';
+                }
+            } else {
+                $output .= '
+    <tr>
+     <td colspan="6">No Folder Found</td>
+    </tr>
+   ';
+            }
+            $output .= '</table>';
+            echo $output;
+        }
+    }
+
 
     if($_POST["action"] == "create")
     {
@@ -119,7 +154,6 @@ if(isset($_POST["action"]))
    <tr>
     <th>Image</th>
     <th>File Name</th>
-    <th>Download</th>
     <th>Delete</th>
    </tr>
   ';
@@ -137,7 +171,6 @@ if(isset($_POST["action"]))
     <tr>
      <td><img src="'.$path.'" class="img-thumbnail" height="50" width="50" /></td>
      <td contenteditable="true" data-folder_name="'.$_POST["folder_name"].'"  data-file_name = "'.$file.'" class="change_file_name">'.$file.'</td>
-     <td><a href="'.$path.'" class="download_file" download>Download</button></td>
      <td><button name="remove_file" class="remove_file btn btn-danger btn-xs" id="'.$path.'">Remove</button></td>
     </tr>
     ';
@@ -147,31 +180,30 @@ if(isset($_POST["action"]))
         echo $output;
     }
 
+
+    //Delete FILE
+
+
     if($_POST["action"] == "remove_file")
     {
-        if(file_exists($_POST["file"]))
+        if(file_exists($_POST["path"]))
         {
+            $stmt = $DB_con->prepare("DELETE * FROM `files` WHERE file_id=:file_id");
+            $stmt->execute(array(":file_id"=>$userRow["file_id"]));
+            $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
             unlink($_POST["path"]);
-            echo 'File Deleted';
+            echo 'Datei gelöscht';
         }
     }
 
-    if($_POST["action"] == "download_file")
-    {
-        if(file_exists($_POST["path"])) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . basename($_POST["path"]) . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            readfile($_POST["path"]);
-            exit;
-        }
-    }
+
+
 
     if($_POST["action"] == "change_file_name")
     {
+        $stmt = $DB_con->prepare("UPDATE * FROM `files` WHERE file_id=:file_id AND file_name=:filename");
+        $stmt->execute(array(":file_id"=>$userRow["file_id"]));
+        $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
         $old_name = $_POST["folder_name"] . '/' . $_POST["old_file_name"];
         $new_name = $_POST["folder_name"] . '/' . $_POST["new_file_name"];
         if(rename($old_name, $new_name))
