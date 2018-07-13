@@ -1,44 +1,10 @@
 <?php
-require_once('../private/initialize.php');
-
-$errors = [];
-$username = '';
-$password = '';
-
-if(is_post_request()) {
-
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    // Validations
-    if(is_blank($username)) {
-        $errors[] = "Der Username muss ausgefüllt werden.";
-    }
-    if(is_blank($password)) {
-        $errors[] = "Das Passwort muss ausgefüllt werden.";
-    }
-
-    // if there were no errors, try to login
-    if(empty($errors)) {
-        $user = User::find_by_username($username);
-        // test if user found and password is correct
-        if($user != false && $user->verify_password($password)) {
-            // Mark user as logged in
-            $session->login($user);
-            redirect_to(url_for('/index.php'));
-        } else {
-            // username not found or password does not match
-            $errors[] = "Der Login hat nicht funktioniert.";
-        }
-
-    }
-
-}
+include 'language.class.php';
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
 
@@ -60,13 +26,19 @@ if(is_post_request()) {
     <!-- Stylesheet für jelly-->
     <link href="css/style.css" rel="stylesheet">
 
+    <!-- roberts cooler test-->
 </head>
 
-<body id="page-top">
-
+<body id="page-top"">
+<?php
+$language = new language( 'de');
+$lang = $language->translate();
+?>
+<div   style="display: none"> </div>
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+<nav  class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
+
         <a class="navbar-brand js-scroll-trigger" href="#page-top">jelly</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
@@ -75,21 +47,23 @@ if(is_post_request()) {
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link js-scroll-trigger" href="#about">Über jelly</a>
+                    <a class="nav-link js-scroll-trigger" href="#about"><?php echo $lang->index->aboutjelly?></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link js-scroll-trigger" href="#feature">Features</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link js-scroll-trigger" href="#register">Registrieren</a>
+                    <a class="nav-link js-scroll-trigger" href="#register"><?php echo $lang->index->registernav?></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
                         <i class="fa fa-fw fa-sign-out"></i>Login</a>
                 </li>
-
-
             </ul>
+            <form action="" method="post">
+                <input type="submit" name="en" value="english"/>
+                <input type="submit" name="de" value="deutsch"/>
+            </form>
         </div>
     </div>
 </nav>
@@ -101,7 +75,7 @@ if(is_post_request()) {
             <div class="row">
                 <div class="col-lg-8 mx-auto">
                     <h1 class="brand-heading">jelly</h1>
-                    <p class="intro-text">Das etwas andere File-Sharing.</p>
+                    <p class="intro-text"><?php echo $lang->index->jelly?></p>
                     <a href="#about" class="btn btn-circle js-scroll-trigger">
                         <i class="fa fa-angle-double-down animated"></i>
                     </a>
@@ -115,9 +89,10 @@ if(is_post_request()) {
 <section id="about" class="content-section text-center">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <h2>Was ist jelly?</h2>
-
+            <div  class="col-lg-8 mx-auto">
+                <h2><?php echo $lang->index->isjelly1?></h2>
+                <p> <?php echo $lang->index->isjelly?></p>
+                <!-- Text über was ist Jelly ist -->
             </div>
         </div>
     </div>
@@ -127,41 +102,45 @@ if(is_post_request()) {
 <section id="feature" class="download-section content-section text-center">
     <div class="container">
         <div class="col-lg-8 mx-auto">
-            <h2>Was kann jelly?</h2>
-            <p>jelly ist deine Plattform auf der DU deine Datein ganz bequem und sicher hochladen kannst.</p>
-
+            <h2><?php echo $lang->index->canjelly1?></h2>
+            <p><?php echo $lang->index->canjelly?></p>
+            <!-- Text über was kann Jelly ist -->
         </div>
     </div>
 </section>
 
 <!-- Registrieren Section -->
+
+
 <section id="register" class="content-section text-center">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <h2>Registriere dich jetzt!</h2>
+                <form action="index.php?btn-register" method="post">
+                    <h2><?php echo $lang->index->jellyregister?></h2>
 
-<form>
-                    <form action="?register=1" method="post">
-                        E-Mail:<br>
-                        <input type="email" size="40" maxlength="250" name="email" placeholder="max.mustermann@jelly.de"><br><br>
 
-                        Dein Passwort:<br>
-                        <input type="password" size="40"  maxlength="250" name="password"><br>
+                        <form>
+                            <?php echo $lang->index->mailregister?> :<br>
+                            <input type="email" class="form-control" size="40" maxlength="250" name="txt_email" placeholder="max.mustermann@jelly.de" value=""><br><br>
 
-                        Passwort wiederholen:<br>
-                        <input type="password" size="40" maxlength="250" name="password2"><br><br>
+                            <?php echo $lang->index->pswdregister?> :<br>
+                            <input type="password" class="form-control" size="40"  maxlength="250" name="txt_upass" placeholder="password"><br>
+    s
+                            <br><br>
 
-                        <input type="submit" class="btn btn-default btn-lg" value="Jetzt loslegen!">
-                    </form>
-</form>
+                            <input type="submit" class="btn btn-default btn-lg" name="btn-register" value="Jetzt loslegen!">
+                        </form>
+                    <label><?php echo $lang->index->account?> <a href="index.php"><?php echo $lang->index->login?></a></label>
+                </form>
+
 
 
             </div>
         </div>
     </div>
 </section>
-
+<!--Ende Registrieren -->
 
 <!-- Footer mit Social Media -->
 <footer>
@@ -189,8 +168,11 @@ if(is_post_request()) {
         <p>Copyright &copy; jelly 2018</p>
     </div>
 </footer>
+<!-- Ende Footer -->
 
-<!-- Logout Modal-->
+<!-- Login Modal - Öffnet sich im Fenster-->
+
+
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -201,22 +183,26 @@ if(is_post_request()) {
                 </button>
             </div>
             <div class="modal-body">
-                <?php
-                if(isset($errorMessage)) {
-                    echo $errorMessage;
-                }
-                ?>
 
-                <form action="?index=1" method="post">
-                    E-Mail:<br>
-                    <input type="text" name="username" value="<?php echo h($username); ?>"><br><br>
-
-                    Dein Passwort:<br>
-                    <input type="password" name="password" value="" /><br>
-                    <input type="submit" name="submit" value="Einloggen" />
+                <form method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="txt_email" placeholder="E-Mail" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="txt_password" placeholder="Your Password" required />
+                    </div>
+                    <div class="clearfix"></div><hr />
+                    <div class="form-group">
+                        <button type="submit" name="btn-login" class="btn btn-block btn-primary">
+                            <i class="glyphicon glyphicon-log-in"></i>&nbsp;SIGN IN
+                        </button>
+                    </div>
+                    <br />
+                    <label>Ich bin noch nicht registriert <a href="#register">Registrieren</a></label>
                 </form>
+
+
                 <div class="modal-footer">
-                     <?php echo display_errors($errors); ?>
                 </div>
 
             </div>
@@ -224,15 +210,13 @@ if(is_post_request()) {
         </div>
     </div>
 </div>
-
+<!-- Modal Ende - Ende von Login -->
 <!-- Bootstrap core JavaScript -->
-<script src="jquery/jquery.js"></script>
-<script src="bootstrap/js/bootstrap.bundle.js"></script>
+<script src="jquery/jquery.min.js"></script>
+<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Plugin JavaScript -->
-<script src="jquery-easing/jquery.easing.js"></script>
-
-
+<script src="jquery-easing/jquery.easing.min.js"></script>
 
 <!-- Extra JavaScript -->
 <script src="js/jelly.js"></script>
@@ -240,4 +224,3 @@ if(is_post_request()) {
 </body>
 
 </html>
->>>>>>> Stashed changes
