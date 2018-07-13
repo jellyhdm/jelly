@@ -42,8 +42,7 @@ if(isset($_POST["action"]))
         {
             foreach($folder as $name)
             {
-                if (is_dir($name)) {
-                    $output .= '   
+       $output .= '   
                 
                     
      <tr>
@@ -52,7 +51,7 @@ if(isset($_POST["action"]))
       <td><button type="button" name="delete" data-name="' . $name . '" class="delete btn btn-danger btn-xs">Löschen</button></td>
       <td><button type="button" name="view_files" data-name="' . $name . '" class="view_files btn btn-default btn-xs">Dateien anschauen</button></td>
      </tr>';
-                }
+
             }
         }
         else
@@ -206,9 +205,21 @@ if(isset($_POST["action"]))
 
     if($_POST["action"] == "change_file_name")
     {
-        $stmt = $DB_con->prepare("UPDATE * FROM `files` WHERE file_id=:file_id AND file_name=:filename");
-        $stmt->execute(array(":file_id"=>$userRow["file_id"]));
-        $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt =$DB_con->prepare('
+            UPDATE files
+            SET file_name = :file_name, file_path = :file_path, owner_id = :owner_id
+            WHERE file_id = :file_id
+            ');
+            $stmt->bindParam(':file_name', $file_name);
+            $stmt->bindParam(':file_path', $file_path);
+            $stmt->bindParam(':owner_id', $owner_id);
+            $stmt->bindParam(':file_id', $file_id);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo("Fehler! Bitten wenden Sie sich an den Administrator...<br>" . $e->getMessage() . "<br>");
+            die();
+        }
         $old_name = $_POST["folder_name"] . '/' . $_POST["old_file_name"];
         $new_name = $_POST["folder_name"] . '/' . $_POST["new_file_name"];
         if(rename($old_name, $new_name))
