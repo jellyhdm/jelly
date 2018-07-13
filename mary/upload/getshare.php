@@ -1,8 +1,6 @@
 <?php
 include_once ('../private/includes/dbconfig.php');
-if (!$user->is_loggedin()) {
-    $user->redirect('index.php');
-}
+
 // Current logged in user
 $id= $_SESSION['user_session'];
 $stmt= $DB_con->prepare("SELECT * FROM users WHERE id=:id");
@@ -33,18 +31,19 @@ try {
         $stmt3->execute(array(":file_id"=>$userRow["file_id"]));
         $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
         // file_get_contents reads the file content and returns it
-        $down=file_get_contents('upload/uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
-        if (file_exists($down)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.basename($down).'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($down));
-            readfile($down);
-            exit;
-        }   }
+        $down=file_get_contents('uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
+
+    if (file_exists($down)) {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="'.basename($down).'"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($down));
+        readfile($down);
+        exit;
+    }}
     // No public file => check access
     else
     {
@@ -59,18 +58,20 @@ try {
             $stmt3 = $DB_con->prepare("SELECT * FROM `files` WHERE file_id=:file_id");
             $stmt3->execute(array(":file_id"=>$userRow["file_id"]));
             $userRowFile=$stmt3->fetch(PDO::FETCH_ASSOC);
-            $down=file_get_contents('/upload/uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
-            if (file_exists($down)) {
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="'.basename($down).'"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($down));
-                readfile($down);
-                exit;
-            } }
+            $down=file_get_contents('uploaded/'.$userRowFile["owner_id"].'/'. $userRowFile["file_name"]);
+
+        if (file_exists($down)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename($down).'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($down));
+            readfile($down);
+            exit;
+        }}
+
     }
 
 } catch (PDOException $e) {
