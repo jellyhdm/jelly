@@ -26,7 +26,7 @@ if(isset($_POST["action"]))
 {
     if($_POST["action"] == "fetch")
     {
-        $folder = (glob($owner_id.'/*'));
+        $folder = array_slice((scandir($owner_id.'/')),2);
 
         $output = '
   <table class="table table-bordered table-striped">
@@ -37,17 +37,22 @@ if(isset($_POST["action"]))
     <th>Dateien anschauen</th>
    </tr>
    ';
+
         if(count($folder) > 0)
         {
             foreach($folder as $name)
             {
-                $output .= '
+                if (is_dir($name1)) {
+                    $output .= '   
+                
+                    
      <tr>
-      <td>'.$name.'</td>
-      <td><button type="button" name="update" data-name="'.$name.'" class="update btn btn-warning btn-xs">Umbenennen</button></td>
-      <td><button type="button" name="delete" data-name="'.$name.'" class="delete btn btn-danger btn-xs">Löschen</button></td>
-      <td><button type="button" name="view_files" data-name="'.$name.'" class="view_files btn btn-default btn-xs">Dateien anschauen</button></td>
+      <td>' . $name . '</td>
+      <td><button type="button" name="update" data-name="' . $name . '" class="update btn btn-warning btn-xs">Umbenennen</button></td>
+      <td><button type="button" name="delete" data-name="' . $name . '" class="delete btn btn-danger btn-xs">Löschen</button></td>
+      <td><button type="button" name="view_files" data-name="' . $name . '" class="view_files btn btn-default btn-xs">Dateien anschauen</button></td>
      </tr>';
+                }
             }
         }
         else
@@ -82,7 +87,7 @@ if(isset($_POST["action"]))
                     $output .= '
      <tr>
  
-      <td contenteditable="true" data-folder_name="'.$_POST["folder_name"].'" data-file_name ="'.$file.'" class="change_file_name">'.$file.'</button></td>
+      <td>'.$name1.'</td>
       <td><button type="button" name="rename" data-name="' . $name1 . '" class="rename btn btn-info btn-xs">Verschieben</button></td>
       <td><button type="button" name="share" data-name="' . $name1 . '" class="share btn btn-default btn-xs">Teilen</button></td>
       <td><button type="button" name="remove_file" data-name="' . $name1 . '" class="remove_file btn btn-danger btn-xs" id="'.$path.'">Löschen</button></td>
